@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_bg"
+    android:orientation="vertical"
+    android:padding="10dp"
+    android:gravity="center">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="⚡ BGMI BOOSTER"
+        android:textColor="#FF6A00"
+        android:textSize="10sp"
+        android:textStyle="bold"/>
+    <TextView
+        android:id="@+id/widget_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Krishan Mohan"
+        android:textColor="#C8D8E8"
+        android:textSize="9sp"
+        android:layout_marginTop="3dp"/>
+    <TextView
+        android:id="@+id/widget_boost_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="🚀 OPEN BOOSTER"
+        android:textColor="#FFFFFF"
+        android:textSize="9sp"
+        android:textAlignment="center"
+        android:background="@drawable/widget_btn"
+        android:padding="6dp"
+        android:layout_marginTop="7dp"
+        android:textStyle="bold"/>
+</LinearLayout>
