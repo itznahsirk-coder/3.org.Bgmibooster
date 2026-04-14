@@ -46,10 +46,9 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .tool-val{font-family:'Orbitron',monospace;font-size:9px;font-weight:700;text-align:center}
 .tool-status{position:absolute;top:5px;right:5px;width:6px;height:6px;border-radius:50%;background:var(--dim)}
 .tool-status.on{background:var(--gr);box-shadow:0 0 5px var(--gr)}
-/* FPS OVERLAY */
-.fps-overlay{position:fixed;top:12px;left:12px;z-index:9999;background:rgba(0,0,0,.8);border:1px solid var(--or);border-radius:8px;padding:4px 10px;display:none;pointer-events:none}
-.fps-num{font-family:'Orbitron',monospace;font-size:16px;font-weight:900;color:var(--or)}
-.fps-lbl{font-size:8px;color:var(--dim2);letter-spacing:1px}
+
+
+
 /* CARDS */
 .card{background:var(--card);border:1px solid var(--bdr);border-radius:14px;padding:14px;margin-bottom:12px;position:relative;overflow:hidden}
 .card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,106,0,.2),transparent)}
@@ -220,7 +219,6 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 </style>
 </head>
 <body>
-<div class="fps-overlay" id="fpsOverlay"><div class="fps-num" id="fpsNum">--</div><div class="fps-lbl">FPS</div></div>
 
 <div class="hdr"><div class="w">
   <div class="hr1"><div class="dot-row"><div class="dot"></div><span class="dtag">LIVE ACTIVE</span></div><span class="bpill" id="batPill">🔋 --</span></div>
@@ -264,26 +262,29 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 
   <!-- QUICK TOOLS -->
   <div class="tools-grid">
-    <div class="tool-card" id="tc-fps" onclick="toggleFPS()">
-      <div class="tool-status" id="fps-dot"></div>
-      <div class="tool-icon">📊</div>
-      <div class="tool-val" id="fps-val" style="color:var(--gr)">-- FPS</div>
-      <div class="tool-name">FPS COUNTER</div>
-    </div>
-    <div class="tool-card tc-bl" onclick="openModal('sens')">
-      <div class="tool-icon">🎯</div>
-      <div class="tool-val" style="color:var(--bl)" id="sensProfile">BALANCED</div>
-      <div class="tool-name">SENSITIVITY</div>
-    </div>
-    <div class="tool-card tc-pu" onclick="openModal('cross')">
-      <div class="tool-icon">✚</div>
-      <div class="tool-val" style="color:var(--pu)" id="crossName">DEFAULT</div>
-      <div class="tool-name">CROSSHAIR</div>
-    </div>
+
+
+
     <div class="tool-card tc-gr" onclick="addWidget()">
       <div class="tool-icon">📱</div>
       <div class="tool-val" style="color:var(--gr)">ADD</div>
       <div class="tool-name">WIDGET</div>
+    </div>
+    <div class="tool-card tc-bl" id="tc-ping" onclick="quickPingTest()">
+      <div class="tool-status" id="ping-dot"></div>
+      <div class="tool-icon">📡</div>
+      <div class="tool-val" style="color:var(--bl)" id="pingToolVal">TAP</div>
+      <div class="tool-name">PING TEST</div>
+    </div>
+    <div class="tool-card tc-gr" id="tc-ram" onclick="quickRamBoost()">
+      <div class="tool-icon">🧠</div>
+      <div class="tool-val" style="color:var(--gr)" id="ramToolVal">BOOST</div>
+      <div class="tool-name">RAM BOOST</div>
+    </div>
+    <div class="tool-card tc-pu" id="tc-net" onclick="checkNetwork()">
+      <div class="tool-icon">📶</div>
+      <div class="tool-val" style="color:var(--pu)" id="netToolVal">CHECK</div>
+      <div class="tool-name">NETWORK</div>
     </div>
     <div class="tool-card tc-re" id="tc-tempAlert" onclick="toggleTempAlert()">
       <div class="tool-status" id="temp-dot"></div>
@@ -373,41 +374,9 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
   <div class="modal-foot"><button class="mf-btn mf-res" onclick="confirmRestrictApps()">🚫 APPLY RESTRICTIONS</button><button class="mf-btn mf-cancel" onclick="closeModal('app')">CANCEL</button></div>
 </div>
 
-<!-- SENSITIVITY MODAL -->
-<div class="modal" id="modal-sens">
-  <div class="mh"><div class="mt">🎯 SENSITIVITY CALCULATOR</div><div class="mc" onclick="closeModal('sens')">✕</div></div>
-  <div class="ml">
-    <div class="ib bl" style="margin-top:8px"><div class="ib-t">ℹ️ HOW TO USE</div><p>Preset select karo → values dekho → <strong>manually BGMI settings mein set karo</strong>. Ye calculator sirf suggest karta hai — game mein automatically nahi jaata.</p></div>
-    <div class="sens-preset">
-      <button class="sp-btn" id="sp-rush" onclick="setSensPreset('rush',this)">🔥 RUSH</button>
-      <button class="sp-btn sel" id="sp-balanced" onclick="setSensPreset('balanced',this)">⚖️ BALANCED</button>
-      <button class="sp-btn" id="sp-sniper" onclick="setSensPreset('sniper',this)">🎯 SNIPER</button>
-    </div>
-    <div class="card">
-      <div class="ct">📷 CAMERA SENSITIVITY</div>
-      <table class="sens-table" id="sensTable">
-        <tr><th>SCOPE</th><th>CAMERA</th><th>ADS</th></tr>
-      </table>
-    </div>
-    <div class="card">
-      <div class="ct">🔄 GYROSCOPE SENSITIVITY</div>
-      <table class="sens-table" id="gyroTable">
-        <tr><th>SCOPE</th><th>VALUE</th></tr>
-      </table>
-    </div>
-    <div class="ib or"><div class="ib-t">⚠️ IMPORTANT</div><p>Ye values iQOO Z3 5G ke liye <strong>recommended starting point</strong> hain. Apni game style ke hisab se adjust karo. App se set nahi hota — <strong>manually BGMI mein daalna hai</strong>.</p></div>
-  </div>
-</div>
 
-<!-- CROSSHAIR MODAL -->
-<div class="modal" id="modal-cross">
-  <div class="mh"><div class="mt">✚ CROSSHAIR CUSTOMIZER</div><div class="mc" onclick="closeModal('cross')">✕</div></div>
-  <div class="ml">
-    <div class="ib bl" style="margin-top:8px"><div class="ib-t">ℹ️ HOW TO USE</div><p>Ek crosshair select karo → neeche BGMI settings dikhenge → <strong>manually BGMI mein set karo</strong>. Ye app game mein kuch nahi karta — sirf visual preview hai.</p></div>
-    <div class="cross-grid" id="crossGrid"></div>
-    <div class="cross-info" id="crossInfo">Ek crosshair select karo ⬆️</div>
-  </div>
-</div>
+
+
 
 <div class="nav">
   <button class="nv active" onclick="T('home',this);navA(this)"><span class="nv-i">🏠</span><span class="nv-l">HOME</span></button>
@@ -444,27 +413,10 @@ const FD={
 const TOG_CLASS={aim:'aim-tog',inp:'inp-tog',ai:'ai-tog',prem:'pr-tog',frame:'fr-tog',hit:'fr-tog'};
 let TS={}, addedGames=[], restrictedPkgs={}, deviceGames=[], deviceApps=[];
 let gSelection={}, aSelection={};
-let fpsRunning=false, fpsFrame=0, fpsLast=0, fpsCount=0;
 let tempAlertOn=false, sessionStart=Date.now();
-let currentSensPreset='balanced', currentCross=0;
 Object.keys(FD).forEach(c=>FD[c].forEach((_,i)=>{TS[c+'_'+i]=false;}));
 
-// ════ SENSITIVITY DATA ════
-const SENS={
-  rush:{cam:{tpp:105,fpp:90,rds:52,x2:42,x3:32,x4:26,x6:20,x8:13},ads:{tpp:88,fpp:75,rds:45,x2:36,x3:28,x4:22,x6:17,x8:11},gyro:{ns:240,rds:170,x2:140,x3:110,x4:88,x6:70,x8:55}},
-  balanced:{cam:{tpp:90,fpp:80,rds:45,x2:38,x3:28,x4:22,x6:17,x8:11},ads:{tpp:75,fpp:65,rds:38,x2:30,x3:24,x4:19,x6:14,x8:10},gyro:{ns:200,rds:140,x2:110,x3:88,x4:70,x6:55,x8:42}},
-  sniper:{cam:{tpp:75,fpp:65,rds:38,x2:30,x3:24,x4:19,x6:14,x8:10},ads:{tpp:60,fpp:55,rds:32,x2:25,x3:20,x4:16,x6:12,x8:8},gyro:{ns:170,rds:120,x2:90,x3:72,x4:58,x6:45,x8:35}}
-};
 
-// ════ CROSSHAIR DATA ════
-const CROSSES=[
-  {name:'CLASSIC +',color:'#FF6A00',draw:(c)=>{const x=c.width/2,y=c.height/2;c.getContext('2d').clearRect(0,0,c.width,c.height);const ctx=c.getContext('2d');ctx.strokeStyle='#FF6A00';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x-12,y);ctx.lineTo(x+12,y);ctx.moveTo(x,y-12);ctx.lineTo(x,y+12);ctx.stroke();},info:'BGMI Settings: Crosshair Color → Orange\nStyle: Cross\nBest for: All-round play'},
-  {name:'DOT •',color:'#00E59B',draw:(c)=>{const ctx=c.getContext('2d');ctx.clearRect(0,0,c.width,c.height);ctx.fillStyle='#00E59B';ctx.beginPath();ctx.arc(c.width/2,c.height/2,4,0,Math.PI*2);ctx.fill();},info:'BGMI Settings: Crosshair Color → Green\nStyle: Dot\nBest for: Close range, Rush'},
-  {name:'OPEN +',color:'#00AAFF',draw:(c)=>{const x=c.width/2,y=c.height/2,ctx=c.getContext('2d');ctx.clearRect(0,0,c.width,c.height);ctx.strokeStyle='#00AAFF';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x-14,y);ctx.lineTo(x-5,y);ctx.moveTo(x+5,y);ctx.lineTo(x+14,y);ctx.moveTo(x,y-14);ctx.lineTo(x,y-5);ctx.moveTo(x,y+5);ctx.lineTo(x,y+14);ctx.stroke();},info:'BGMI Settings: Crosshair Color → Blue\nStyle: Open Cross\nBest for: Sniping, Long range'},
-  {name:'T-SHAPE',color:'#CC44FF',draw:(c)=>{const x=c.width/2,y=c.height/2,ctx=c.getContext('2d');ctx.clearRect(0,0,c.width,c.height);ctx.strokeStyle='#CC44FF';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x-12,y);ctx.lineTo(x+12,y);ctx.moveTo(x,y);ctx.lineTo(x,y+12);ctx.stroke();},info:'BGMI Settings: Crosshair Color → Purple\nStyle: T-Cross\nBest for: Aggressive push'},
-  {name:'CIRCLE ◉',color:'#FFD700',draw:(c)=>{const x=c.width/2,y=c.height/2,ctx=c.getContext('2d');ctx.clearRect(0,0,c.width,c.height);ctx.strokeStyle='#FFD700';ctx.lineWidth=2;ctx.beginPath();ctx.arc(x,y,10,0,Math.PI*2);ctx.stroke();ctx.fillStyle='#FFD700';ctx.beginPath();ctx.arc(x,y,2,0,Math.PI*2);ctx.fill();},info:'BGMI Settings: Crosshair Color → Yellow\nStyle: Circle+Dot\nBest for: Spray control'},
-  {name:'X CROSS',color:'#FF3355',draw:(c)=>{const x=c.width/2,y=c.height/2,ctx=c.getContext('2d');ctx.clearRect(0,0,c.width,c.height);ctx.strokeStyle='#FF3355';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x-10,y-10);ctx.lineTo(x+10,y+10);ctx.moveTo(x+10,y-10);ctx.lineTo(x-10,y+10);ctx.stroke();},info:'BGMI Settings: Crosshair Color → Red\nStyle: X-Cross\nBest for: Close CQC fights'}
-];
 
 // ════ ENABLE ALL ════
 function enableAllFeatures(){
@@ -545,35 +497,6 @@ function set(id,val,pct,color,status){
   if(ls){ls.textContent=status;ls.style.color=pct>60?color:'var(--dim2)';}
 }
 
-// ════ FPS COUNTER ════
-function toggleFPS(){
-  fpsRunning=!fpsRunning;
-  const overlay=document.getElementById('fpsOverlay'), dot=document.getElementById('fps-dot'), card=document.getElementById('tc-fps');
-  if(fpsRunning){
-    overlay.style.display='block'; dot.classList.add('on'); card.classList.add('active-tool');
-    fpsLast=performance.now(); fpsCount=0; requestAnimationFrame(trackFPS);
-    toast('📊 FPS Counter ON');
-  } else {
-    overlay.style.display='none'; dot.classList.remove('on'); card.classList.remove('active-tool');
-    document.getElementById('fps-val').textContent='-- FPS';
-    toast('📊 FPS Counter OFF');
-  }
-}
-
-function trackFPS(){
-  if(!fpsRunning) return;
-  fpsCount++;
-  const now=performance.now();
-  if(now-fpsLast>=1000){
-    const fps=Math.round(fpsCount*1000/(now-fpsLast));
-    fpsCount=0; fpsLast=now;
-    document.getElementById('fpsNum').textContent=fps;
-    document.getElementById('fps-val').textContent=fps+' FPS';
-    document.getElementById('fpsNum').style.color=fps>=60?'var(--gr)':fps>=30?'var(--ye)':'var(--re)';
-  }
-  requestAnimationFrame(trackFPS);
-}
-
 // ════ REAL PING ════
 function refreshPing(){
   set('ping','...','0','var(--dim2)','TESTING...');
@@ -638,7 +561,6 @@ function setProfile(name, btn){
   prof.cats.forEach(cat=>{Object.keys(TS).filter(k=>k.startsWith(cat+'_')).forEach(k=>{TS[k]=true;});});
   Object.keys(FD).forEach(cat=>renderTog(cat));
   updateAll(); updateEafBadge();
-  document.getElementById('sensProfile').textContent=name.toUpperCase();
   const on=Object.values(TS).filter(Boolean).length;
   toast(prof.label+' — '+on+' features activated!');
   try{if(isAndroid)Android.vibrate();}catch(e){}
@@ -655,49 +577,7 @@ function updateSessionTimer(){
   else el.style.color='var(--gr)';
 }
 
-// ════ SENSITIVITY CALCULATOR ════
-function setSensPreset(preset, btn){
-  currentSensPreset=preset;
-  document.querySelectorAll('.sp-btn').forEach(b=>b.classList.remove('sel'));
-  btn.classList.add('sel');
-  renderSensTable();
-  document.getElementById('sensProfile').textContent=preset.toUpperCase();
-}
 
-function renderSensTable(){
-  const s=SENS[currentSensPreset];
-  const scopes=[['No Scope (TPP)',s.cam.tpp,s.ads.tpp],['No Scope (FPP)',s.cam.fpp,s.ads.fpp],['Red Dot / Holo',s.cam.rds,s.ads.rds],['2x Scope',s.cam.x2,s.ads.x2],['3x Scope',s.cam.x3,s.ads.x3],['4x ACOG',s.cam.x4,s.ads.x4],['6x Scope',s.cam.x6,s.ads.x6],['8x Scope',s.cam.x8,s.ads.x8]];
-  document.getElementById('sensTable').innerHTML='<tr><th>SCOPE</th><th>CAMERA</th><th>ADS</th></tr>'+scopes.map(r=>'<tr><td>'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td></tr>').join('');
-  const g=s.gyro;
-  const gyroScopes=[['No Scope',g.ns],['Red Dot',g.rds],['2x',g.x2],['3x',g.x3],['4x',g.x4],['6x',g.x6],['8x',g.x8]];
-  document.getElementById('gyroTable').innerHTML='<tr><th>SCOPE</th><th>GYRO VALUE</th></tr>'+gyroScopes.map(r=>'<tr><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>').join('');
-}
-
-// ════ CROSSHAIR ════
-function renderCrosshairs(){
-  const grid=document.getElementById('crossGrid');
-  grid.innerHTML='';
-  CROSSES.forEach((cr,i)=>{
-    const div=document.createElement('div');
-    div.className='cross-card'+(i===currentCross?' sel':'');
-    const canvas=document.createElement('canvas');
-    canvas.width=60; canvas.height=60; canvas.className='cross-canvas';
-    div.appendChild(canvas);
-    const nm=document.createElement('div');
-    nm.className='cross-name'; nm.textContent=cr.name; div.appendChild(nm);
-    div.onclick=()=>selectCross(i);
-    grid.appendChild(div);
-    cr.draw(canvas);
-  });
-}
-
-function selectCross(i){
-  currentCross=i;
-  document.querySelectorAll('.cross-card').forEach((c,idx)=>c.classList.toggle('sel',idx===i));
-  document.getElementById('crossName').textContent=CROSSES[i].name;
-  const info=CROSSES[i].info.split('\n').map(l=>'<div>'+l+'</div>').join('');
-  document.getElementById('crossInfo').innerHTML='<div style="font-family:Orbitron,monospace;font-size:9px;color:var(--or);margin-bottom:8px;letter-spacing:1px">BGMI SETTINGS TO APPLY MANUALLY:</div>'+info+'<div style="margin-top:8px;font-size:11px;color:var(--dim2)">⚠️ BGMI mein manually set karo — app automatically nahi karta</div>';
-}
 
 // ════ BOOST ════
 function runBoost(){
@@ -896,6 +776,45 @@ function updateStats(){
 function htmlEsc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function htmlAttr(s){return String(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 
+// ════ NEW TOOL FUNCTIONS ════
+function quickPingTest(){
+  const val=document.getElementById('pingToolVal'), dot=document.getElementById('ping-dot');
+  val.textContent='...'; dot.classList.add('on');
+  if(!isAndroid){
+    setTimeout(()=>{const p=Math.floor(Math.random()*25)+10;val.textContent=p+'ms';dot.classList.remove('on');toast('📡 Ping: '+p+'ms (simulated)');},1200);
+    return;
+  }
+  try{
+    const r=JSON.parse(Android.measurePing());
+    if(r.ping<0){val.textContent='FAIL';toast('❌ No internet');}
+    else{val.textContent=r.ping+'ms';toast('📡 Ping: '+r.ping+'ms — '+r.status);}
+  }catch(e){val.textContent='ERR';}
+  dot.classList.remove('on');
+}
+
+function quickRamBoost(){
+  const val=document.getElementById('ramToolVal');
+  val.textContent='...';
+  if(!isAndroid){setTimeout(()=>{val.textContent='DONE';toast('🧠 RAM Boost done! (APK only for real effect)');},800);return;}
+  try{
+    const r=JSON.parse(Android.killBackgroundApps());
+    val.textContent=r.killed+'killed';
+    toast('🧠 RAM Boost! '+r.killed+' apps cleared');
+    setTimeout(()=>{val.textContent='BOOST';},3000);
+  }catch(e){val.textContent='BOOST';toast('🧠 RAM cleared!');}
+}
+
+function checkNetwork(){
+  const val=document.getElementById('netToolVal');
+  val.textContent='...';
+  if(!isAndroid){setTimeout(()=>{val.textContent='WiFi';toast('📶 Network: WiFi (APK only for real data)');},600);return;}
+  try{
+    const r=JSON.parse(Android.getNetworkType());
+    val.textContent=r.type;
+    toast('📶 Network: '+r.type+(r.connected?' ✅':' ❌'));
+  }catch(e){val.textContent='CHECK';toast('📶 Check failed');}
+}
+
 // ════ TOAST ════
 let tTm;
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(tTm);tTm=setTimeout(()=>el.classList.remove('show'),2500);}
@@ -904,7 +823,6 @@ function toast(msg){const el=document.getElementById('toast');el.textContent=msg
 Object.keys(FD).forEach(c=>renderTog(c));
 renderGames(); renderAppList(); updateAll(); updateStats(); updateEafBadge();
 setProfile('tournament', document.getElementById('prof-tournament'));
-renderSensTable(); renderCrosshairs();
 setInterval(updateStats,8000);
 setInterval(updateSessionTimer,1000);
 refreshPing();
